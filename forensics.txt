@@ -1,0 +1,83 @@
+	Forensics
+	----------------------------------
+	1-Manuplating Data
+		1.1-Reversing
+			Writing or reading a file in binary mode:
+			f = open('Reverseit', "rb")
+			s = f.read()
+			f.close()
+			f = open('ItsReversed', "wb")
+			f.write(s[::-1])
+			f.close()
+
+		1.2-ByteArray
+			http://infohost.nmt.edu/tcc/help/pubs/python/web/bytearray-type.html
+			Reading a file into a bytearray for processing:
+			- data = bytearray(open('challenge.png', 'rb').read())
+			- example2 = bytearray.fromhex(u'00 ff')
+			- s = bytearray(b"Hello World")
+	
+	2-File format identification 
+		- file screenshot.png 
+	3-File carving
+		- binwalk
+		- foremost
+		- To manually extract a sub-section of a file (from a known offset to a known offset), you can use the dd
+		$ dd if=./file_with_a_file_in_it.xxx of=./extracted_file.xxx bs=1 skip=1335205 count=40668937
+	4-Initial analysis
+		- strings to search for all plain-text strings in the file
+		- Example of searching for the PNG magic bytes in a PNG file:
+			 bgrep 89504e47 screenshot.png 
+		- hexdump -C screenshot.png | less
+	5-Binary-as-text encodings
+		- echo aGVsbG8gd29ybGQh | base64 -D
+		- Example of using xxd to do text-as-ascii-to-hex encoding
+			$ echo hello world\! | xxd -p
+			68656c6c6f20776f726c64210a
+	File Formats:
+		https://github.com/corkami/pics/tree/master/binary
+	6-Archive files
+    	- 'unzip' will often output helpful information on why a zip will not decompress.
+    	- 'zipdetails' -v will provide in-depth information on the values present in the various fields of the format.
+    	- 'zipinfo' lists information about the zip file's contents, without extracting it.
+    	- 'zip -F input.zip --out output.zip and zip -FF input.zip --out output.zip' attempt to repair a corrupted zip file.
+    	- 'fcrackzip brute-force' guesses a zip password (for passwords <7 characters or so).
+    7-Image file format analysis
+    	- exiftool screenshot.png 
+    	- pngcheck -vt ArcTriomphe-iCCP-red-blue-swap.png
+    	- stegsolve.jar
+    	- zsteg
+    	- gimp
+    8-Packet Capture (PCAP) file analysis
+    	- tcpdump
+    	- tshark
+    	- capinfos
+    	- dpkt (Python package for pcap manipulation)
+    	- If trying to repair a damaged PCAP file, there is an online service for repairing PCAP files called PCAPfix.
+    9-Memory dump analysis
+    	- open-source framework for memory dump analysis is Volatility.
+    	- Ethscan is made to find data in a memory dump that looks like network packets, and then extract it into a pcap file for viewing in Wireshark
+    10-PDF file analysis
+    	(!) http://www.itsecure.hu/library/file/Biztons%C3%A1gi%20%C3%BAtmutat%C3%B3k/Alkalmaz%C3%A1sok/Hidden%20Data%20and%20Metadata%20in%20Adobe%20PDF%20Files.pdf
+    	(!) Its wiki https://github.com/corkami/docs/blob/master/PDF/PDF.md
+
+    	-qpdf
+    	-Origami
+    	When exploring PDF content for hidden data, some of the hiding places to check include:
+		    non-visible layers
+		    Adobe's metadata format "XMP"
+		    the "incremental generation" feature of PDF wherein a previous version is retained but not visible to the user
+		    white text on a white background
+		    text behind images
+		    an image behind an overlapping image
+		    non-displayed comments
+	11-Video and Audio file analysis
+		- mediainfo
+		- exiftool
+		- Audacity
+		- Sox 
+		- ffmpeg (For analyzing and manipulating video file formats) (ffmpy in python)
+		- a message might be encoded into the audio as DTMF tones or morse code. 
+		- It's also common to check least-significant-bits (LSB) for a secret message
+
+REF : https://trailofbits.github.io/ctf/forensics/
